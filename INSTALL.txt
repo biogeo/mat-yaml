@@ -1,0 +1,39 @@
+To install Mat-YAML, you'll need to do the following:
+
+
+Linux / Mac OS:
+1. Download and install libyaml (available from http://pyyaml.org/wiki/LibYAML).
+2. Build the yaml_mex mex file for your platform. If libyaml installed nicely
+   and you already have MEX configured properly for your system (see the Matlab
+   documentation for that), then you should just need to change to the mex-src
+   directory and enter the following command at the Matlab prompt:
+
+   >>> mex yaml_mex.c yaml_mex_util.c -lyaml
+
+   If you are on a 64-bit Mac OS system, this may fail, because libyaml builds
+   as 32-bit by default, and Matlab can't link to that code for a 64-bit MEX
+   file. If this happens, try the following commands instead of "make" during
+   the libyaml installation process:
+
+   % make CFLAGS='-g -O2 -arch x86_64'
+   % cp src/.libs/libyaml.a <path/to/mat-yaml>/mex-src/libyaml64.a
+
+   And then in Matlab:
+
+   >>> mex yaml_mex.c yaml_mex_util.c libyaml64.a
+
+3. Add mat-yaml/mex-src and mat-yaml/mfiles to your Matlab path, or copy the
+   files in them to a directory already on your path.
+
+
+Windows:
+    I'm afraid I haven't got the slightest idea how to build this on Windows. If
+    someone manages to do so and would like to submit instructions, I'll gladly
+    add them here.
+
+Note:
+    Reasonable efforts have been made to ensure that this project is without
+    serious bugs, but this is an amateur project, and as the license says, it is
+    distributed to you "without warranty of any kind." If you do discover a bug,
+    please submit a report on the project's issue tracker, or, even better,
+    send in a fix.

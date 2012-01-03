@@ -1,0 +1,15 @@
+---
+struct:
+  int: 3
+  float: 3.14
+  notnum: .NaN
+  infin: -.Inf
+cell:
+  - foo
+  - bar
+  - baz
+  - &struct2
+    sure: true
+    nope: false
+#will fail: yaml_simple_construct can't handle keys that aren't valid struct fields
+...
