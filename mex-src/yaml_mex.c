@@ -53,9 +53,9 @@ void command_load( int nlhs, mxArray *plhs[],
     if (nrhs != 1 || !mxIsChar(prhs[0]) || mxGetM(prhs[0]) > 1) {
         mexErrMsgTxt("'load' requires 1 additional string input.");
     }
-    //plhs = mxCalloc(1, sizeof(mxArray **));
+    /*plhs = mxCalloc(1, sizeof(mxArray **));*/
     plhs[0] = ymx_load_stream(prhs[0]);
-    //mexCallMATLAB(0, NULL, 1, plhs[0], "disp");
+    /*mexCallMATLAB(0, NULL, 1, plhs[0], "disp");*/
     ymx_debug_msg("Exiting command_load\n");
 }
 

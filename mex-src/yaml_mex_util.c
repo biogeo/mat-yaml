@@ -155,7 +155,7 @@ static int ymx_buffer_write_handler(void *data,
 /*
  * Globals; needed so we can clean up memory leaks if there's a problem.
  *************************************************************************/
-// Supposedly these will all be initialized to zeros with static lifetime.
+/* Supposedly these will all be initialized to zeros with static lifetime. */
 static yaml_parser_t   persistent_parser;
 static yaml_emitter_t  persistent_emitter;
 static yaml_event_t    persistent_event;
@@ -193,8 +193,8 @@ void ymx_set_node_fields(mxArray *array, mwIndex ind, ymx_node_t *node) {
 }
 
 const yaml_event_t *ymx_parse(yaml_parser_t *parser) {
-    // I really hate doing this, but I can't think of another good way to
-    // keep from leaking memory if Matlab generates an error.
+    /* I really hate doing this, but I can't think of another good way to
+     * keep from leaking memory if Matlab generates an error. */
     yaml_event_delete(&persistent_event);
     if (!yaml_parser_parse(parser, &persistent_event)) {
         mexPrintf("Parser error: %s\n", parser->problem);
@@ -279,7 +279,7 @@ int ymx_is_valid_tagdirs_array(const mxArray *tagdirs) {
         for (array_ind=0; array_ind<size; array_ind++) {
             member = mxGetFieldByNumber(tagdirs, array_ind, field_ind);
             if (mxGetNumberOfElements(member) == 0)
-                return 0; // Empty tag elements not okay
+                return 0; /* Empty tag elements not okay */
             
             if (!ymx_is_valid_string(member))
                 return 0;
@@ -336,7 +336,7 @@ int ymx_is_valid_string(const mxArray *string) {
         return 0;
     
     if (mxGetNumberOfElements(string) == 0)
-        return 1; // Empty strings are okay
+        return 1; /* Empty strings are okay */
     
     if (mxGetNumberOfDimensions(string) != 2)
         return 0;
@@ -709,7 +709,7 @@ void ymx_dump_document(yaml_emitter_t *emitter,
     if (!doc.root || !ymx_is_valid_doc_root(doc.root))
         ymx_error("Invalid document root");
     
-    // Assemble tag directives
+    /* Assemble tag directives */
     doc.tagdirs = mxGetFieldByNumber( docs_array, ind,
             YMX_DOC_FIELD_TAGDIRS );
     
@@ -799,7 +799,7 @@ void ymx_dump_document(yaml_emitter_t *emitter,
     yaml_document_end_event_initialize(event, end_implicit);
     ymx_emit(emitter, event);
     
-    // Free memory allocated for tag directives
+    /* Free memory allocated for tag directives */
     for (tagdir_ind=0; tagdir_ind < num_tag_directives; tagdir_ind++) {
         mxFree(tag_directives_start[tagdir_ind].handle);
         mxFree(tag_directives_start[tagdir_ind].prefix);
@@ -811,7 +811,7 @@ void ymx_dump_node(
         yaml_emitter_t *emitter,
         const mxArray *node,
         mwIndex ind ) {
-    // Assemble tag
+    /* Assemble tag */
     mxArray *tag_arr = mxGetFieldByNumber( node, ind,
             YMX_NODE_FIELD_TAG );
     
@@ -823,7 +823,7 @@ void ymx_dump_node(
         tag_str = (yaml_char_t *)mxArrayToString(tag_arr);
     }
     
-    // Assemble anchor
+    /* Assemble anchor */
     mxArray *anchor_arr = mxGetFieldByNumber( node, ind,
             YMX_NODE_FIELD_ANCHOR );
     yaml_char_t *anchor_str = NULL;
@@ -834,7 +834,7 @@ void ymx_dump_node(
         anchor_str = (yaml_char_t *)mxArrayToString(anchor_arr);
     }
     
-    // Assemble implicit
+    /* Assemble implicit */
     mxArray *implicit_arr = mxGetFieldByNumber( node, ind,
             YMX_NODE_FIELD_IMPLICIT );
     int32_T implicit_int = 0;
@@ -844,7 +844,7 @@ void ymx_dump_node(
         mexWarnMsgTxt("Invalid node implicit specifier");
     }
     
-    // Assemble style
+    /* Assemble style */
     mxArray *style_arr = mxGetFieldByNumber( node, ind,
             YMX_NODE_FIELD_STYLE );
     int32_T style_int = 0;
@@ -854,11 +854,11 @@ void ymx_dump_node(
         mexWarnMsgTxt("Invalid node style");
     }
     
-    // Get value
+    /* Get value */
     mxArray *value_arr = mxGetFieldByNumber( node, ind,
             YMX_NODE_FIELD_VALUE );
     
-    // Handle type
+    /* Handle type */
     mxArray *type = mxGetFieldByNumber(node, ind, YMX_NODE_FIELD_TYPE);
     if (!type || !ymx_is_valid_int_scalar(type))
         ymx_error("Invalid node type");
@@ -1055,7 +1055,7 @@ static int ymx_buffer_write_handler(void *data,
     return 1;
 }
 
-// int ymx_is_valid_node_item(const mxArray *node, mwIndex ind) {
+/* int ymx_is_valid_node_item(const mxArray *node, mwIndex ind) {
 //     ymx_node_t members;
 //     members.type = mxGetFieldByNumber(node, ind,
 //             YMX_NODE_FIELD_TYPE );
@@ -1155,7 +1155,7 @@ static int ymx_buffer_write_handler(void *data,
 //     }
 //     
 //     return 1;
-// }
+// } */
 
 /* Determine whether an individual document in an array is valid. Assumes
  * ymx_is_valid_doc_array has already been called and returned 1, or
@@ -1164,7 +1164,7 @@ static int ymx_buffer_write_handler(void *data,
  * traverse the full node tree to assess its validity; simply verifies that
  * the top-level root has valid structure with ymx_is_valid_node_array.
  */
-// int ymx_is_valid_doc_item(const mxArray *doc_array, mwIndex ind) {
+/* int ymx_is_valid_doc_item(const mxArray *doc_array, mwIndex ind) {
 //     ymx_document_t members;
 //     members.root = mxGetFieldByNumber(doc_array, ind,
 //             YMX_DOC_FIELD_ROOT );
@@ -1201,4 +1201,4 @@ static int ymx_buffer_write_handler(void *data,
 //         return 0;
 //     
 //     return 1;
-// }
+// } */

@@ -1,0 +1,84 @@
+Mat-YAML is an interface to LibYAML for Matlab and GNU Octave.
+
+Mat-YAML is intended to make it easy to convert Matlab structs and vectors to
+and from YAML mappings and sequences. Because the correspondence between these
+types is not perfect (eg, YAML mappings can have arbitrary keys, while Matlab
+structs' field names must be valid Matlab identifiers), this is not always
+possible. But, in many cases, the correspondence is close enough to be useful.
+
+In dumping Matlab objects to YAML, arrays (of any type except char) become
+sequences, scalar structs become mappings, char arrays become strings, numeric
+values become floats, and logical values become bools. In loading YAML to
+Matlab, sequences become cell arrays, mappings become structs (if possible), and
+scalars are resolved according to their type. Because Matlab lacks a true
+reference type, documents that include aliases cannot be loaded using the simple
+interface. Note also that the Matlab -> YAML -> Matlab round-trip will not
+preserve the original data structure exactly (though recovering it should be
+fairly trivial in most cases).
+
+In addition to this simple high-level interface, Mat-YAML provides a lower-level
+means of representing YAML documents within Matlab which can be used as a basis
+for addressing "pathological" mappings (having keys that aren't valid Matlab
+identifiers) or aliases. Tinker as necessary!
+
+Note well!
+    Reasonable efforts have been made to ensure that this project is without
+    serious bugs, but this is an amateur project, and as the license says, it is
+    distributed to you "without warranty of any kind." Always back up your data!
+    If you do discover a bug, please submit a report on the project's issue
+    tracker, or, even better, send in a fix.
+
+INSTALLATION
+
+Linux / Mac OS:
+1. Download and install LibYAML (available from http://pyyaml.org/wiki/LibYAML).
+   Follow the directions from LibYAML's README, but it should be as simple as
+   executing these three commands from the shell in the directory you unpacked
+   LibYAML to:
+   % ./configure
+   % make
+   % sudo make install
+   (Regarding the libyaml Ubuntu package, see troubleshooting note [1].)
+
+2. Build the yaml_mex mex file for your platform. If LibYAML installed nicely
+   and you already have MEX configured properly for your system (see the Matlab
+   documentation for that), then you should just need to change to the mex-src
+   directory and enter the following command at the Matlab prompt:
+
+   >>> mex yaml_mex.c yaml_mex_util.c -lyaml
+
+   (If this fails and you're running a 64-bit Mac OS system, see troubleshooting
+   note [2].)
+
+3. Add mat-yaml/mex-src and mat-yaml/mfiles to your Matlab path, or copy the
+   files in them to a directory already on your path. Verify that you can load
+   and dump YAML files using yaml_load and yaml_dump.
+
+Windows:
+    I'm afraid I haven't got the slightest idea how to build this on Windows,
+    and I lack access to a machine (and the time) that would let me figure it
+    out. If you build Mat-YAML successfully on Windows, please contact me and
+    share your knowledge.
+
+Troubleshooting notes:
+[1]  If you are running Linux and installed LibYAML from the Ubuntu repositories
+     (perhaps as a dependency of PyYAML) instead of building it yourself, it
+     seems that the necessary header file yaml.h is missing, and there are also
+     link errors when trying to build yaml_mex. There doesn't seem to be any
+     problem with having both the repository and the manual installation, so go
+     ahead and install it manually as well.
+     This issue was encountered and resolved under Linux Mint 13 Maya.
+
+[2]  If you are on a 64-bit Mac OS system, the mex build may fail, because
+     libyaml may build as 32-bit by default, and Matlab can't link to that code
+     for a 64-bit MEX file. If this happens, try the following commands instead
+     of "make" during the libyaml installation process:
+
+     % make CFLAGS='-g -O2 -arch x86_64'
+     % cp src/.libs/libyaml.a <path/to/mat-yaml>/mex-src/libyaml64.a
+
+     And then in Matlab:
+     >>> mex yaml_mex.c yaml_mex_util.c libyaml64.a
+
+     This issue was encountered and resolved under Mac OS 10.5.8.
+
