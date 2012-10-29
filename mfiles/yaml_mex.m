@@ -1,4 +1,4 @@
-% yaml_mex    A mex-file for processing YAML
+% yaml_mex    A MEX-file for processing YAML
 % Usage:
 %     doc = yaml_mex('load', str)
 %     str = yaml_mex('dump', doc)
@@ -12,6 +12,11 @@
 % Other Matlab code should handle the translation between this partial
 % representation and fully native Matlab data structures (numeric arrays,
 % cell arrays, structs, etc.)
+%
+% For most use cases, it will be easier to use yaml_load and yaml_dump to
+% interface with YAML files. However, these functions cannot deal properly
+% with aliases or mapping keys which are not valid Matlab struct field
+% names.
 %
 % A YAML stream is represented as an array of structs, each representing a
 % document in the stream. Documents have must these fields:
@@ -80,3 +85,41 @@
 % 
 % When dumping a stream, there is no guarantee that presentation style
 % requests will be honored.
+%
+% To ensure that yaml_mex is supplied with the proper YAML document
+% representation, it is strongly recommended that you use these functions
+% to compose the input to yaml_mex('dump'):
+%     yaml_document:      Compose the document root
+%     yaml_scalar_node:   Compose a scalar node with a supplied value
+%     yaml_sequence_node: Compose an empty sequence node
+%     yaml_mapping_node:  Compose an empty mapping node
+%     yaml_alias_node:    Compose an alias node with a supplied anchor
+% These functions perform the proper error checking to ensure that the
+% resulting nodes are suitable for passing to yaml_mex.
+
+% Copyright (c) 2011 Geoffrey Adams
+% 
+% Permission is hereby granted, free of charge, to any person obtaining a
+% copy of this software and associated documentation files
+% (the "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject to the
+% following conditions:
+% 
+% The above copyright notice and this permission notice shall be included
+% in all copies or substantial portions of the Software.
+% 
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+% MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+% NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+% DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+% OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+% USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+% This code should only be executed if the yaml_mex MEX-file is not
+% available.
+error('yaml_mex:NoMex', ['yaml_mex has not been built, or is not on ' ...
+    'the Matlab path. See the README file for instructions on ' ...
+    'how to build yaml_mex.']);

@@ -1,9 +1,8 @@
-function yaml_data = yaml_load(yaml_stream)
-% yaml_load  Load data from a YAML document
+function data = yaml_file_load(filename)
+% yaml_load  Load data from a YAML file
 % Usage:
-%     yaml_data = yaml_load(yaml_stream)
-% Extracts the data represented in the YAML stream stored in the char array
-% yaml_stream into native Matlab data.
+%     data = yaml_file_load(filename)
+% Loads a YAML stream from a file and constructs it to native Matlab data.
 %
 % YAML mappings:
 %     are constructed as Matlab structs, subject to the constraint that the
@@ -28,6 +27,9 @@ function yaml_data = yaml_load(yaml_stream)
 %     will cause yaml_load to fail, as Matlab lacks a native reference
 %     type. (These documents can still be read by yaml_mex, but you'll have
 %     to handle the document structure yourself.)
+%
+% This is just a convenience function which calls fileread to load the YAML
+% file and yaml_load to construct the native representation.
 
 % Copyright (c) 2011 Geoffrey Adams
 % 
@@ -50,5 +52,5 @@ function yaml_data = yaml_load(yaml_stream)
 % OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 % USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-yaml_doc = yaml_mex('load', yaml_stream);
-yaml_data = yaml_simple_construct(yaml_doc.root);
+yaml_stream = fileread(filename);
+data = yaml_load(yaml_stream);

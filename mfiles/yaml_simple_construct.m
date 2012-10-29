@@ -1,7 +1,13 @@
 function data = yaml_simple_construct(yaml_node)
+% yaml_simple_construct  Construct Matlab native data from YAML nodes
+% Usage:
+%     data = yaml_simple_construct(yaml_node)
 % Peforms a very simplistic construction of Matlab data types from a YAML
-% document representation, as output by yaml_mex. This construction will
-% attempt to follow the YAML 1.2 spec, with some limitations:
+% document or node, structured as output by yaml_mex (see "help yaml_mex").
+% This construction will attempt to follow the YAML 1.2 spec (although
+% libyaml currently only supports YAML 1.1, and will produce an error when
+% reading a document with the "%YAML 1.2" directive), with some
+% limitations:
 % ---
 % Aliases:
 %   -> Matlab native data types don't implement references, so aliases
@@ -19,6 +25,27 @@ function data = yaml_simple_construct(yaml_node)
 %      enough for downstream code to convert (eg, [data{:}]).
 % ...
 % Scalars are resolved according to the YAML core tags.
+
+% Copyright (c) 2011 Geoffrey Adams
+% 
+% Permission is hereby granted, free of charge, to any person obtaining a
+% copy of this software and associated documentation files
+% (the "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject to the
+% following conditions:
+% 
+% The above copyright notice and this permission notice shall be included
+% in all copies or substantial portions of the Software.
+% 
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+% MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+% NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+% DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+% OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+% USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 % If we received a document, get its root.
 if isfield(yaml_node, 'root')

@@ -1,10 +1,12 @@
-function yaml_stream = yaml_dump(data)
-% yaml_dump  Dump Matlab data to a YAML document
+function yaml_stream = yaml_file_dump(filename, data)
+% yaml_file_dump  Dump Matlab data to a YAML file
 % Usage:
-%     yaml_stream = yaml_dump(data)
-% Accepts basic Matlab objects (numeric, char, logical, cell, and struct)
-% and emits them as a YAML document, stored in the char array yaml_stream.
-% More complex Matlab datatypes (eg, classes) cannot be dumped.
+%     yaml_file_dump(filename, data)
+%     yaml_stream = yaml_file_dump(...)
+% Accepts a basic Matlab object (numeric, char, logical, cell, and struct)
+% as "data" and emits it as a YAML document, stored in a new YAML file
+% "filename". More complex Matlab datatypes (eg, classes) cannot be dumped.
+% The stream may optionally also be returned as an output string.
 % Matlab data is represented in YAML in the following way:
 %
 % A non-scalar object of any type except char:
@@ -32,6 +34,9 @@ function yaml_stream = yaml_dump(data)
 % (ie, each element in the array becomes a scalar element in a cell array).
 % In many cases it will be easy to recover the original data structure if
 % its types are known.
+%
+% This is a convenience function which calls yaml_dump to compose the YAML
+% document and fwrite to write it to a file.
 
 % Copyright (c) 2011 Geoffrey Adams
 % 
@@ -54,5 +59,17 @@ function yaml_stream = yaml_dump(data)
 % OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 % USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-yaml_doc = yaml_simple_compose(data);
-yaml_stream = yaml_mex('dump', yaml_doc);
+my_yaml_stream = yaml_dump(data);
+fid = fopen(filename, 'w');
+try
+    fwrite(fid, my_yaml_stream);
+    fclose(fid);
+catch e
+    if ismember(fid, fopen('all'))
+        fclose(fid);
+    end
+    rethrow(e);
+end
+if nargout
+    yaml_stream = my_yaml_stream;
+end
