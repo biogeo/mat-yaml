@@ -51,4 +51,11 @@ function yaml_data = yaml_load(yaml_stream)
 % USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 yaml_doc = yaml_mex('load', yaml_stream);
-yaml_data = yaml_simple_construct(yaml_doc.root);
+if isscalar(yaml_doc)
+    yaml_data = yaml_simple_construct(yaml_doc.root);
+else
+    yaml_data = cell(size(yaml_doc));
+    for i=1:numel(yaml_doc)
+        yaml_data{i} = yaml_simple_construct(yaml_doc(i).root);
+    end
+end
