@@ -562,7 +562,7 @@ void ymx_load_sequence( ymx_node_t *node,
     node->type = ymx_create_int_scalar(YMX_NODE_TYPE_SEQUENCE);
     
     size_t items_buffer_size = NODES_BUFFER_CHUNK_SIZE;
-    ymx_node_t *items = mxCalloc(items_buffer_size, sizeof(ymx_node_t *));
+    ymx_node_t *items = mxCalloc(items_buffer_size, sizeof(ymx_node_t));
     size_t num_items = 0;
     
     const yaml_event_t *event = ymx_parse(parser);
@@ -571,9 +571,9 @@ void ymx_load_sequence( ymx_node_t *node,
         if (num_items == items_buffer_size) {
             items_buffer_size += NODES_BUFFER_CHUNK_SIZE;
             items = mxRealloc(items,
-                    items_buffer_size * sizeof(ymx_node_t *));
+                    items_buffer_size * sizeof(ymx_node_t));
             memset(items + num_items, 0,
-                    NODES_BUFFER_CHUNK_SIZE * sizeof(ymx_node_t *));
+                    NODES_BUFFER_CHUNK_SIZE * sizeof(ymx_node_t));
         }
         ymx_load_node(items + num_items, parser, event);
         num_items++;
@@ -617,8 +617,8 @@ void ymx_load_mapping( ymx_node_t *node,
     node->type = ymx_create_int_scalar(YMX_NODE_TYPE_MAPPING);
     
     size_t buffer_size = NODES_BUFFER_CHUNK_SIZE;
-    ymx_node_t *keys   = mxCalloc(buffer_size, sizeof(ymx_node_t *));
-    ymx_node_t *values = mxCalloc(buffer_size, sizeof(ymx_node_t *));
+    ymx_node_t *keys   = mxCalloc(buffer_size, sizeof(ymx_node_t));
+    ymx_node_t *values = mxCalloc(buffer_size, sizeof(ymx_node_t));
     size_t num_items = 0;
     
     const yaml_event_t *event = ymx_parse(parser);
@@ -627,13 +627,13 @@ void ymx_load_mapping( ymx_node_t *node,
         if (num_items == buffer_size) {
             buffer_size += NODES_BUFFER_CHUNK_SIZE;
             keys = mxRealloc(keys,
-                    buffer_size * sizeof(ymx_node_t *));
+                    buffer_size * sizeof(ymx_node_t));
             memset(keys + num_items, 0,
-                    NODES_BUFFER_CHUNK_SIZE * sizeof(ymx_node_t *));
+                    NODES_BUFFER_CHUNK_SIZE * sizeof(ymx_node_t));
             values = mxRealloc(values,
-                    buffer_size * sizeof(ymx_node_t *));
+                    buffer_size * sizeof(ymx_node_t));
             memset(values + num_items, 0,
-                    NODES_BUFFER_CHUNK_SIZE * sizeof(ymx_node_t *));
+                    NODES_BUFFER_CHUNK_SIZE * sizeof(ymx_node_t));
         }
         
         ymx_load_node(keys + num_items, parser, event);
