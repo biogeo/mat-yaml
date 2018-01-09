@@ -1034,8 +1034,8 @@ void ymx_buffer_append(ymx_buffer_t *buffer,
     if (size > current_space) {
         /* We need to make some room */
         int required_chunks = 1 + (size-current_space)/buffer->chunk_size;
+        buffer->total_size += buffer->chunk_size * required_chunks;
         buffer->head = mxRealloc(buffer->head, buffer->total_size
-                + (buffer->chunk_size * required_chunks)
                 + YMX_BUFFER_TAIL_SIZE);
     }
     memcpy(buffer->head + buffer->used_size, input, size);
