@@ -1,4 +1,4 @@
-function data = yaml_simple_construct(yaml_node , aliasMap , allow_new_alias)
+function data = yaml_simple_construct(yaml_node , varargin)
 % yaml_simple_construct  Construct Matlab native data from YAML nodes
 % Usage:
 %     data = yaml_simple_construct( yaml_node )
@@ -44,14 +44,22 @@ function data = yaml_simple_construct(yaml_node , aliasMap , allow_new_alias)
 % USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+% Internally used (recursive) inputs to varargin:
+%     nargin 2, varargin{1} -- aliasMap, a containers.Map object
 if nargin < 2
     aliasMap = containers.Map;
+else
+    aliasMap = varargin{1};
 end
 
+% Internally used (recursive) inputs to varargin:
+%     nargin 3, varargin{2} -- allow_new_alias, logical flag
+%     When we are resolving an aliased node, expect this input
+%     to be false.
 if nargin < 3
-    %When we are resolving an aliased node, expect this input
-    % to be false.
     allow_new_alias = true;
+else
+    allow_new_alias = varargin{2};
 end
 
 % If we received a document, get its root.
