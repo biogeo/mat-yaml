@@ -1,7 +1,7 @@
-function data = yaml_simple_construct(yaml_node)
+function data = yaml_simple_construct(yaml_node , varargin)
 % yaml_simple_construct  Construct Matlab native data from YAML nodes
 % Usage:
-%     data = yaml_simple_construct(yaml_node)
+%     data = yaml_simple_construct( yaml_node )
 % Peforms a very simplistic construction of Matlab data types from a YAML
 % document or node, structured as output by yaml_mex (see "help yaml_mex").
 % This construction will attempt to follow the YAML 1.2 spec (although
@@ -9,10 +9,6 @@ function data = yaml_simple_construct(yaml_node)
 % reading a document with the "%YAML 1.2" directive), with some
 % limitations:
 % ---
-% Aliases:
-%   -> Matlab native data types don't implement references, so aliases
-%      won't work. These could be implemented with a user-defined handle
-%      subclass, but then it's no longer really a "simple" construction.
 % Mappings:
 %   -> The closest thing Matlab has to a native mapping type is a scalar
 %      struct. This is limited to keys that are valid Matlab identifiers.
@@ -47,6 +43,25 @@ function data = yaml_simple_construct(yaml_node)
 % OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 % USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+% Internally used (recursive) inputs to varargin:
+%     nargin 2, varargin{1} -- aliasMap, a containers.Map object
+if nargin < 2
+    aliasMap = containers.Map;
+else
+    aliasMap = varargin{1};
+end
+
+% Internally used (recursive) inputs to varargin:
+%     nargin 3, varargin{2} -- allow_new_alias, logical flag
+%     When we are resolving an aliased node, expect this input
+%     to be false.
+if nargin < 3
+    allow_new_alias = true;
+else
+    allow_new_alias = varargin{2};
+end
+
 % If we received a document, get its root.
 if isfield(yaml_node, 'root')
     yaml_node = yaml_node.root;
@@ -58,13 +73,19 @@ switch yaml_node.type
     case 2 % sequence
         data = cell(size(yaml_node.value));
         for i=1:numel(yaml_node.value)
-            data{i} = yaml_simple_construct(yaml_node.value(i));
+            data{i} = yaml_simple_construct(yaml_node.value(i) , aliasMap , allow_new_alias);
         end
+        
+        %JDH MOD: detect numeric arrays
+        if all(cellfun(@(x) isa(x , 'double') , data))
+            data = cell2mat(data);
+        end
+        
     case 3 % mapping
         keys = {yaml_node.value(1,:).value};
         values = cell(size(keys));
         for i=1:size(yaml_node.value,2)
-            values{i} = {yaml_simple_construct(yaml_node.value(2,i))};
+            values{i} = {yaml_simple_construct(yaml_node.value(2,i) , aliasMap , allow_new_alias)};
         end
         data_arg = [keys;values];
         try
@@ -76,12 +97,27 @@ switch yaml_node.type
             end
         end
     case 4 % alias
-        error('yaml_simple_construct:aliasType', ...
-            'Cannot construct alias nodes.');
+        data = [];
+        if ~aliasMap.isKey(yaml_node.anchor)
+            warning('yaml_simple_construct:no_such_alias', 'Could not resolve alias ''%s''' , yaml_node.anchor);
+        else
+            aliasedNode = aliasMap(yaml_node.anchor);
+            data = yaml_simple_construct( aliasedNode , aliasMap , false);
+        end
     otherwise
-        error('yaml_simple_construct:unknownType', ...
+        data = [];
+        warning('yaml_simple_construct:unknownType', ...
             'Unrecognized node type.');
 end
+
+%Handle alias
+if allow_new_alias && ~isempty(yaml_node.anchor) && yaml_node.type ~=4
+    if aliasMap.isKey(yaml_node.anchor)
+        warning('yaml_simple_construct:duplicate_anchor' , 'found duplicate alias anchor: %s' , yaml_node.anchor);
+    end
+    aliasMap(yaml_node.anchor) = yaml_node; %#ok<NASGU>
+end
+    
 
 function data = construct_scalar(value, tag)
 if ismember(tag, {'!', 'tag:yaml.org,2002:str'})
