@@ -10,11 +10,9 @@ In dumping Matlab objects to YAML, arrays (of any type except char) become
 sequences, scalar structs become mappings, char arrays become strings, numeric
 values become floats, and logical values become bools. In loading YAML to
 Matlab, sequences become cell arrays, mappings become structs (if possible), and
-scalars are resolved according to their type. Because Matlab lacks a true
-reference type, documents that include aliases cannot be loaded using the simple
-interface. Note also that the Matlab -> YAML -> Matlab round-trip will not
-preserve the original data structure exactly (though recovering it should be
-fairly trivial in most cases).
+scalars are resolved according to their type. Note also that the
+Matlab -> YAML -> Matlab round-trip may not preserve the original data structure exactly
+(though recovering it should be fairly trivial in most cases).
 
 In addition to this simple high-level interface, Mat-YAML provides a lower-level
 means of representing YAML documents within Matlab which can be used as a basis
